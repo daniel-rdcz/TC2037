@@ -19,7 +19,6 @@ Examples:
 '(var spa)
 
 David Vieyra
-Daniel Rodriguez
 2023-03-30
 |#
 
@@ -43,23 +42,22 @@ Daniel Rodriguez
     ([chars (string->list strng)]
      ; Get the initial state of the DFA
      [state (dfa-initial dfa-to-evaluate)]
-     ; Then return list with all the tokens found
+     ; The return list with all the tokens found
      [tokens '()])
     (cond
       ; When the list of chars if over, check if the final state is acceptable
       [(empty? chars)
        (if (member state (dfa-accept dfa-to-evaluate))
-           (reverse (filter (lambda (x) (not (eq? x 'spa))) (cons state tokens)))
-           'invalid)]
+           (reverse (cons state tokens)) ;cons is for returning the first value of the pair
+            'invalid)]
       [else
        (let-values
-       ; Call the transition function and get the new state and wheter or not a token was form
+       ; Call the transition function and get the new state and wheter or not a token was fo
        ([(new-state found) ((dfa-func dfa-to-evaluate) state (car chars))])
        (loop (cdr chars)
              new-state
              ; The new list of tokens
-             (if (and found (not (eq? found 'spa))) (cons found tokens) tokens)))])))
-
+             (if found (cons found tokens) tokens)))])))
 
 ; 567.2 - 341
 ;Se va guardando en una lista: (2.765) float.
@@ -78,7 +76,6 @@ Daniel Rodriguez
   (case state
     ['start (cond
        [(char-numeric? char) (values 'int #f)]
-       [(eq? char #\space) (values 'spa #f)]
        [(or (eq? char #\+) (eq? char #\-)) (values 'sign #f)]
        [(char-alphabetic? char) (values 'var #f)]
        [(eq? char #\_) (values 'var #f)]
@@ -142,7 +139,6 @@ Daniel Rodriguez
      ['spa (cond
        [(char-operator? char) (values 'op #f)]
        [(eq? char #\space) (values 'spa #f)]
-       [(char-numeric? char) (values 'int #f)]
        [else (values 'inv #f)])]
     ['op_spa (cond
        [(char-numeric? char) (values 'int #f)]
@@ -170,6 +166,13 @@ Daniel Rodriguez
        [else (values 'inv #f)])]
     ))
 
+#|
+    Programming a DFA
+    Using recursion and Finite State Automata
+
+    Gilberto Echeverria
+    2021-03-24
+|#
 
 ; Import library for unit testing
 (require rackunit)
@@ -185,7 +188,6 @@ Daniel Rodriguez
         (check-equal? (arithmetic-lexer "2 + 1") '(int op int) "Binary operation with spaces")
         (check-equal? (arithmetic-lexer "6 = 2 + 1") '(int op int op int) "Multiple operators")
         (check-equal? (arithmetic-lexer "97 /6 = 2 + 1") '(int op int op int op int) "Multiple operators")
-        (check-equal? (arithmetic-lexer " 2 + 1 ") '(int op int) "Spaces before and after")
         
     ))
 

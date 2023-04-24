@@ -14,12 +14,10 @@ La función evaluate-dfa recibe como entrada la definición de un DFA y una cade
 ## Cómo utilizar el programa
 Para utilizar el programa, es necesario instalar el lenguaje de programación Racket en el equipo. Una vez instalado, se puede copiar el código del programa en un archivo de texto y guardarlo con la extensión ".rkt".
 
-Ya que el mismo programa tiene implementados sus propios tests, solo bastara con borrar las lineas de comentario especificadas en el codigo para ejecutar el test deseado, una vez borradas al compilar automaticamente se realizararan los test deseados. **Realizar solo un test a la vez, una vez realizado y si se busca realizar otro volver a colocar las lineas de comentario y borrar las del test deseado.**
-
 En caso de querer realizar un test con valores propios, utilizar la función 
 
 **(arithmetic-lexer *string*)**
 
-- Donde *string* debe ir entre comillas "*string*"
+- Donde *string* debe ir entre comillas "*string*" y sera el la expresion aritmetica a evaluar
 
 Puede compilar el programa y ponerlo cuando se este ejecutando el mismo o lo pude poner al final del código con los valores deseados en el apartado de string.

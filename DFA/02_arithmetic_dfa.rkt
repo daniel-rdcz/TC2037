@@ -43,25 +43,27 @@ Daniel Rodriguez
     ([chars (string->list strng)]
      ; Get the initial state of the DFA
      [state (dfa-initial dfa-to-evaluate)]
-     {current-token '()}
+     ; List all the values of the token
+     [tipo '()]
      ; Then return list with all the tokens found
-     [tokens '()])
+     [token '()])
     (cond
       ; When the list of chars if over, check if the final state is acceptable
       [(empty? chars)
-       (if (member state (dfa-accept dfa-to-evaluate))
-           (reverse (filter (lambda (x) (not (eq? x 'spa))) (cons (list (list->string (reverse current-token)) state) tokens)))
-           'invalid)]
+       (if (member state (dfa-accept dfa-to-evaluate)) ; if state is valid
+            (if (eq? state 'spa) ; if final state is 'spa ignore in output
+                (displayer (reverse tipo)) ; 
+                (displayer (reverse (cons (list (list->string (reverse token)) state) tipo))))
+            'invalid)]
       [else
-       (let-values
-       ; Call the transition function and get the new state and wheter or not a token was form
-       ([(new-state found) ((dfa-func dfa-to-evaluate) state (car chars))])
-       (loop (cdr chars)
-             new-state
-             (if found (cons(car chars) current-token)
-                 (list(if (and found (not (eq? found 'spa))) '() (car chars))))
-             ; The new list of tokens
-             (if (and found (not (eq? found 'spa))) (cons (list (list->string (reverse current-token)) found) tokens) tokens)))])))
+       (let-values ([(new-state token-found) ((dfa-func dfa-to-evaluate) state (car chars))])
+          (loop (cdr chars)
+                new-state ; new state
+                (if token-found ; if token is found create list with token and value found
+                      (cons (list (list->string (reverse token)) token-found) tipo)                                tipo)
+                (if (not (char-whitespace? (car chars))) ; ignore whitespace in value
+                    (if token-found
+                    (cons (car chars) '()) (cons (car chars) token))'())))])))
 
 
 ; 567.2 - 341
@@ -80,8 +82,7 @@ Daniel Rodriguez
   Accept states: int float exp "
   (case state
     ['start (cond
-       [(char-numeric? char) (values 'int (string char))]
-       [(eq? char #\space) (values 'spa #f)]
+       [(char-numeric? char) (values 'int #f)]
        [(or (eq? char #\+) (eq? char #\-)) (values 'sign #f)]
        [(char-alphabetic? char) (values 'var #f)]
        [(eq? char #\_) (values 'var #f)]
@@ -91,7 +92,7 @@ Daniel Rodriguez
        [(char-numeric? char) (values 'int #f)]
        [else (values 'inv #f)])]
     ['int (cond
-       [(char-numeric? char) (values 'int (string char))]
+       [(char-numeric? char) (values 'int #f)]
        [(eq? char #\.) (values 'dot  #f)]
        [(or (eq? char #\e) (eq? char #\E)) (values 'e #f)]
        [(char-operator? char) (values 'op 'int)]
@@ -145,7 +146,6 @@ Daniel Rodriguez
      ['spa (cond
        [(char-operator? char) (values 'op #f)]
        [(eq? char #\space) (values 'spa #f)]
-       [(char-numeric? char) (values 'int #f)]
        [else (values 'inv #f)])]
     ['op_spa (cond
        [(char-numeric? char) (values 'int #f)]
@@ -173,5 +173,11 @@ Daniel Rodriguez
        [else (values 'inv #f)])]
     ))
 
+; function to display tokens 
+(define (displayer lst)
+  (let loop ([lst lst] [token (format "Token     Tipo ~n~n")])
+    (if (empty? lst)
+        (displayln token)
+        (loop (cdr lst) (string-append token (format " ~a       ~a ~n ~n"(first (car lst))(second (car lst))))))))
 
-(arithmetic-lexer "22")
+(arithmetic-lexer "a = 32.4 *(-8.6 - b) /       6.1E-8")

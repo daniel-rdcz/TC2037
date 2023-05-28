@@ -25,40 +25,62 @@ defmodule JSON_DFA do
   defp letLoop(chars, dfa, tokens, current_token, state) do
     cond do
       Enum.empty?(chars) ->
-        chars = tokens
-        Enum.join(chars, "")
+        tokens ++ [Enum.join(current_token, "")]
 
-      not(Enum.empty?(chars)) ->
+      true ->
         {new_state, token_found} = dfa.function.(state, hd(chars))
 
         if token_found do
-          tokens = tokens ++ [Enum.join(current_token, "")]
-          current_token = []
-        end
-        if not(token_found) do
           current_token = current_token ++ [hd(chars)]
+          tokens = tokens ++ [classer(Enum.join(current_token, ""), state)]
+          letLoop(
+            tl(chars),
+            dfa,
+            tokens,
+            [],
+            new_state
+          )
+        else
+          letLoop(
+            tl(chars),
+            dfa,
+            tokens,
+            current_token ++ [hd(chars)],
+            new_state
+          )
         end
-
-        letLoop(tl(chars), dfa, tokens, current_token, new_state)
     end
   end
 
+
+
+
+
   def classer(token, state) do
     cond do
+      state == :start and token == "{" or token == "}"->
+        "<span class=\"punctuation\">#{token}</span>"
+
       state == :punctuation ->
-        "<span class=\"punctuation\">" <> token <> "</span>"
+        "<span class=\"punctuation\">#{token}</span>"
     end
   end
 
   def deltaArithmetic(state, char) do
     cond do
-      state == :start and char == "{" ->
-        {:punctuation, false}
+      state == :start and is_punctuation?(char)->
+        {:punctuation, true}
 
-      state == :punctuation and char == "}" ->
+      state == :punctuation and is_punctuation?(char)->
         {:punctuation, true}
     end
   end
+
+  def is_punctuation?(char) do
+    punctuations = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~"]
+    Enum.member?(punctuations, char)
+  end
+
 end
 
 # JSON_DFA.readerWritter("example.json", "ex.html")

@@ -4,11 +4,13 @@ defmodule FilesGenerator do
     <!DOCTYPE html>
     <html>
     <head>
-      <title>My HTML File</title>
+      <title>Resaltaro de Staxs/title>
+      <link rel="stylesheet" href="token_colors.css">
     </head>
     <body>
       <h1>Hello, Elixir!</h1>
       <p>#{text}</p>
+      <p> Created By Daniel Rodriguez, David Vieyra and Miguel Cabrera </p>
     </body>
     </html>
     """

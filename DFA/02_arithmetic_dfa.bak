@@ -19,6 +19,7 @@ Examples:
 '(var spa)
 
 David Vieyra
+Daniel Rodriguez
 2023-03-30
 |#
 
@@ -42,22 +43,28 @@ David Vieyra
     ([chars (string->list strng)]
      ; Get the initial state of the DFA
      [state (dfa-initial dfa-to-evaluate)]
-     ; The return list with all the tokens found
-     [tokens '()])
+     ; List all the values of the token
+     [tipo '()]
+     ; Then return list with all the tokens found
+     [token '()])
     (cond
       ; When the list of chars if over, check if the final state is acceptable
       [(empty? chars)
-       (if (member state (dfa-accept dfa-to-evaluate))
-           (reverse (cons state tokens)) ;cons is for returning the first value of the pair
+       (if (member state (dfa-accept dfa-to-evaluate)) ; if state is valid
+            (if (eq? state 'spa) ; if final state is 'spa ignore in output
+                (displayer (reverse tipo)) ; 
+                (displayer (reverse (cons (list (list->string (reverse token)) state) tipo))))
             'invalid)]
       [else
-       (let-values
-       ; Call the transition function and get the new state and wheter or not a token was fo
-       ([(new-state found) ((dfa-func dfa-to-evaluate) state (car chars))])
-       (loop (cdr chars)
-             new-state
-             ; The new list of tokens
-             (if found (cons found tokens) tokens)))])))
+       (let-values ([(new-state token-found) ((dfa-func dfa-to-evaluate) state (car chars))])
+          (loop (cdr chars)
+                new-state ; new state
+                (if token-found ; if token is found create list with token and value found
+                    (cons (list (list->string (reverse token)) token-found) tipo)tipo)
+                (if (not (char-whitespace? (car chars))) ; ignore whitespace in value
+                    (if token-found
+                    (cons (car chars) '()) (cons (car chars) token))'())))])))
+
 
 ; 567.2 - 341
 ;Se va guardando en una lista: (2.765) float.
@@ -166,31 +173,11 @@ David Vieyra
        [else (values 'inv #f)])]
     ))
 
-#|
-    Programming a DFA
-    Using recursion and Finite State Automata
+; function to display tokens 
+(define (displayer lst)
+  (let loop ([lst lst] [token (format "Token     Tipo ~n~n")])
+    (if (empty? lst)
+        (displayln token)
+        (loop (cdr lst) (string-append token (format " ~a       ~a ~n ~n"(first (car lst))(second (car lst))))))))
 
-    Gilberto Echeverria
-    2021-03-24
-|#
-
-; Import library for unit testing
-(require rackunit)
-; Import necesary to view the test results
-(require rackunit/text-ui)
-
-(define test-arithmetic-lexer
-    (test-suite
-        " Test function: arithmetic-lexer"
-        (check-equal? (arithmetic-lexer "2") '(int) "Single digit")
-        (check-equal? (arithmetic-lexer "261") '(int) "Multi digit int")
-        (check-equal? (arithmetic-lexer "2+1") '(int op int) "Binary operation")
-        (check-equal? (arithmetic-lexer "2 + 1") '(int op int) "Binary operation with spaces")
-        (check-equal? (arithmetic-lexer "6 = 2 + 1") '(int op int op int) "Multiple operators")
-        (check-equal? (arithmetic-lexer "97 /6 = 2 + 1") '(int op int op int op int) "Multiple operators")
-        
-    ))
-
-; Start the execution of the test suite
-(displayln "Testing: arithmetic-lexer")
-(run-tests test-arithmetic-lexer)
+(arithmetic-lexer "a = 32.4 *(-8.6 - b) /       6.1E-8")

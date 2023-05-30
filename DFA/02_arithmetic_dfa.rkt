@@ -46,7 +46,7 @@ Daniel Rodriguez
      ; List all the values of the token
      [tipo '()]
      ; Then return list with all the tokens found
-     [token '()])
+     [token '()])  
     (cond
       ; When the list of chars if over, check if the final state is acceptable
       [(empty? chars)
@@ -60,7 +60,7 @@ Daniel Rodriguez
           (loop (cdr chars)
                 new-state ; new state
                 (if token-found ; if token is found create list with token and value found
-                      (cons (list (list->string (reverse token)) token-found) tipo)                                tipo)
+                    (cons (list (list->string (reverse token)) token-found) tipo)tipo)
                 (if (not (char-whitespace? (car chars))) ; ignore whitespace in value
                     (if token-found
                     (cons (car chars) '()) (cons (car chars) token))'())))])))

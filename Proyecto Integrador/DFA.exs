@@ -3,7 +3,7 @@ defmodule JSON_DFA do
     data =
       in_filename
       |> File.stream!()
-      |> Enum.map(&main/1)
+      |> Enum.map(&evaluateLine/1)
       |> Enum.join("")
 
     File.write(out_filename, data)
@@ -11,71 +11,37 @@ defmodule JSON_DFA do
 
   defstruct function: nil, initial_state: nil, accepted_states: []
 
-  def main(line) do
-    evaluateLine(
-      %JSON_DFA{
-        function: &deltaArithmetic/2,
-        initial_state: :start,
-        accepted_states: [:punctuation, :object_key]
-      },
-      line
-    )
-  end
-
-  def evaluateLine(dfaToEvaluate, line) do
+  def evaluateLine(line) do
     chars = String.graphemes(line)
-    letLoop(chars, dfaToEvaluate, [], [], dfaToEvaluate.initial_state)
+    recursion_function(chars, [], [], :start)
+    |> Enum.reverse() # Invertir la lista para obtener el orden correcto
+    |> Enum.join("") # Unir los elementos en una cadena
   end
 
-  defp letLoop(chars, dfa, tokens, current_token, state) do
-    cond do
-      Enum.empty?(chars) ->
-        tokens ++ [Enum.join(current_token, "")]
+  defp recursion_function([], tokens, current_token, _state) do
+    [Enum.join(current_token, "") | tokens]
+  end
 
-      hd(chars) == " " or hd(chars) == "\n" ->
-        letLoop(
-          tl(chars),
-          dfa,
-          tokens ++ [hd(chars)],
-          current_token,
-          state
-        )
+  defp recursion_function([" " | rest], tokens, _current_token, state) do
+    recursion_function(rest, [" " | tokens], [], state)
+  end
 
-      true ->
-        {new_state, token_found} = dfa.function.(state, hd(chars))
+  defp recursion_function(["\n" | rest], tokens, _current_token, state) do
+    recursion_function(rest, ["\n" | tokens], [], state)
+  end
 
-        if token_found do
-          if Enum.empty?(current_token) do
-            current_token = current_token ++ [hd(chars)] #no usar append
-            tokens = tokens ++ [classer(Enum.join(current_token, ""), state)]
-            letLoop(
-            tl(chars), #[head | tail]
-            dfa,
-            tokens,
-            [],
-            new_state
-          )
-          else
-            tokens = tokens ++ [classer(Enum.join(current_token, ""), state)]
-            letLoop(
-            chars,
-            dfa,
-            tokens,
-            [],
-            new_state
-          )
-          end
-
-        else
-          letLoop(
-            tl(chars),
-            dfa,
-            tokens,
-            current_token ++ [hd(chars)],
-            new_state
-          )
-        end
-
+  defp recursion_function([head | tail], tokens, current_token, state) do
+    {new_state, token_found} = deltaArithmetic(state, head)
+    if token_found do
+      if Enum.empty?(current_token) do
+        tokens = [classer(head, state) | tokens]
+        recursion_function(tail, tokens, [], new_state)
+      else
+        tokens = [classer(Enum.reverse(current_token) |> Enum.join(""), state) | tokens]
+        recursion_function([head | tail], tokens, [], new_state)
+      end
+    else
+      recursion_function(tail, tokens, [head | current_token], new_state)
     end
   end
 
@@ -131,8 +97,6 @@ defmodule JSON_DFA do
     end
   end
 
-
-
   def is_punctuation?(char) do
     punctuations = [",", ".", ":", ";", "[", "]", "{", "}", "(", ")"]
     Enum.member?(punctuations, char)
@@ -151,5 +115,4 @@ defmodule JSON_DFA do
     Enum.member?(object_keys, char)
   end
 end
-
 # JSON_DFA.readerWritter("example.json", "ex.html")

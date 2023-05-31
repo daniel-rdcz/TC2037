@@ -1,4 +1,54 @@
 [{
-  "hola": "mundo",
+  "created_at": "Thu Jun 22 21:00:00 +0000 2017",
+  "id": ,
+  "id_str": "877994604561387520",
+  "text": "Creating a Grocery List Manager Using Angular, Part 1: Add & Display Items https://t.co/xFox78juL1 #Angular",
+  "truncated": ,
+  "entities": {
+    "hashtags": [{
+      "text": "Angular",
+      "indices": []
+    }],
+    "symbols": [],
+    "user_mentions": [],
+    "urls": [{
+      "url": "https://t.co/xFox78juL1",
+      "expanded_url": "http://buff.ly/2sr60pf",
+      "display_url": "buff.ly/2sr60pf",
+      "indices": []
+    }]
+  },
+  "valid_source": ,
+  "user": {
+    "id": ,
+    "id_str": "772682964",
+    "name": "SitePoint JavaScript",
+    "screen_name": "SitePointJS",
+    "location": "Melbourne, Australia",
+    "description": "Keep up with JavaScript tutorials, tips, tricks and articles at SitePoint.",
+    "url": "http://t.co/cCH13gqeUK",
+    "entities": {
+      "url": {
+        "urls": [{
+          "url": "http://t.co/cCH13gqeUK",
+          "expanded_url": "https://www.sitepoint.com/javascript",
+          "display_url": "sitepoint.com/javascript",
+          "indices": []
+        }]
+      },
+      "description": {
+        "urls": []
+      }
+    },
+    "protected": ,
+    "followers_count": ,
+    "friends_count": ,
+    "listed_count": ,
+    "created_at": "Wed Aug 22 02:06:33 +0000 2012",
+    "favourites_count": ,
+    "utc_offset": ,
+    "coords": {"x": , "y": },
+    "time_zone": "Wellington"
+  }
 }]
   

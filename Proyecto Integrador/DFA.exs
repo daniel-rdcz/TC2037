@@ -18,14 +18,20 @@ defmodule JSON_DFA do
   defp recursion_function([], tokens, current_token, _state) do
     [Enum.join(current_token, "") | tokens]
   end
-  defp recursion_function([" " | rest], tokens, _current_token, state) do
-    recursion_function(rest, [" " | tokens], [], state)
+  defp recursion_function([" " | rest], tokens, current_token, state) do
+    if state == :string do
+      recursion_function(rest, tokens, [" " | current_token], state)
+    else
+      recursion_function(rest, [" " | tokens], [], state)
+    end
   end
   defp recursion_function(["\n" | rest], tokens, _current_token, state) do
     recursion_function(rest, ["\n" | tokens], [], state)
   end
   defp recursion_function([head | tail], tokens, current_token, state) do
     {new_state, token_found} = stepper(state, head)
+    IO.puts(new_state)
+    IO.puts(tokens)
     if token_found do
       if Enum.empty?(current_token) do
         tokens = [classer(head, state) | tokens]
@@ -43,31 +49,55 @@ defmodule JSON_DFA do
       state == :start and is_object_key?(token) -> "<span class=\"object-key\">#{token}</span>"
       state == :punctuation -> "<span class=\"punctuation\">#{token}</span>"
       state == :object_key -> "<span class=\"object-key\">#{token}</span>"
+      state == :punctuation_str -> "<span class=\"punctuation\">#{token}</span>"
+      state == :string -> "<span class=\"string\">#{token}</span>"
+      state == :close_str -> "<span class=\"string\">#{token}</span>"
     end
   end
 
-  def stepper(state, char) do #nombrs de funciones
+  def stepper(state, char) do
     cond do
       state == :start and is_punctuation?(char) -> {:punctuation, true}
       state == :start and is_object_key?(char) -> {:object_key, false}
+      state == :start and is_punctuation_str?(char) -> {:punctuation_str, true}
       state == :punctuation and is_punctuation?(char) -> {:punctuation, true}
       state == :punctuation and is_object_key?(char) -> {:object_key, false}
-      state == :object_key and is_punctuation?(char) -> {:punctuation, true}
+      state == :punctuation and is_punctuation_str?(char) -> {:punctuation_str, true}
+      state == :punctuation_str and is_string?(char) -> {:string, false}
+      state == :punctuation_str and is_comillas?(char) -> {:string, false}
+      state == :punctuation_str and is_punctuation_str?(char) -> {:punctuation_str, true}
+      state == :punctuation_str and is_punctuation?(char) -> {:punctuation, true}
       state == :object_key and is_object_key?(char) -> {:object_key, false}
+      state == :object_key and is_punctuation?(char) -> {:punctuation, true}
+      state == :object_key and is_punctuation_str?(char) -> {:punctuation_str, true}
+      state == :string and is_string?(char) -> {:string, false}
+      state == :string and is_punctuation?(char) -> {:string, false}
+      state == :string and is_punctuation_str?(char) -> {:string, false}
+      state == :string and is_comillas?(char) -> {:close_str, false}
+      state == :close_str and is_punctuation?(char) -> {:punctuation, true}
     end
   end
 
   def is_punctuation?(char) do
-    punctuation_regex = ~r/[,.:;\[\]{}()]/
+    punctuation_regex = ~r/[,.;\[\]{}()]/
     Regex.match?(punctuation_regex, char)
+  end
+  def is_punctuation_str?(char) do #quitar esto
+    punctuation_str_regex = ~r/[:]/
+    Regex.match?(punctuation_str_regex, char)
+  end
+  def is_comillas?(char) do
+    str_cierre_regex = ~r/["]/
+    Regex.match?(str_cierre_regex, char)
   end
   def is_object_key?(char) do
     object_key_regex = ~r/["a-zA-Z0-9_\- ]/
     Regex.match?(object_key_regex, char)
   end
   def is_string?(char) do
-    string_regex = ~r/["a-zA-Z0-9_\- ]/
+    string_regex = ~r/[a-zA-Z0-9_\-+&#\/]/
     Regex.match?(string_regex, char)
   end
+
 end
 # JSON_DFA.readerWritter("example.json", "ex.html")

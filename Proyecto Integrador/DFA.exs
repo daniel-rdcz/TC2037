@@ -6,7 +6,64 @@ defmodule JSON_DFA do
       |> Enum.map(&evaluateLine/1)
       |> Enum.join("")
 
-    File.write(out_filename, data)
+    write_html_file(out_filename, data)
+    write_css_file("token_colors.css")
+  end
+
+  def write_html_file(file_path, text) do
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Resaltador de Sintaxis</title>
+      <link rel="stylesheet" href="token_colors.css">
+    </head>
+    <body>
+      <h1>Date: 2023-05-30</h1>
+      <p> Created By Daniel Rodriguez, David Vieyra and Miguel Cabrera </p>
+      <pre>#{text}</pre>
+    </body>
+    </html>
+    """
+    File.write(file_path, html)
+  end
+
+  def write_css_file(file_path) do
+    css = """
+    body {
+      background-color: Black;
+      color: Gray;
+    }
+     pre {
+      font-family: Monospace;
+      font-size: 20px;
+    }
+     h1 {
+      color: Black;
+      border: 4px solid red;
+      background-color: Aquamarine;
+      text-align: center;
+    }
+     .number {
+      color: Lime;
+    }
+     .string {
+      color: Yellow;
+      font-style: italic;
+    }
+     .object-key {
+      color: LightSkyBlue;
+      font-weight: bold;
+    }
+     .reserved-word {
+      font-weight: bold;
+      color: SandyBrown;
+    }
+    .punctuation {
+      color: LightGray;
+    }
+    """
+    File.write(file_path, css)
   end
 
   defstruct function: nil, initial_state: nil, accepted_states: []
@@ -98,21 +155,27 @@ defmodule JSON_DFA do
   end
 
   def is_punctuation?(char) do
-    punctuations = [",", ".", ":", ";", "[", "]", "{", "}", "(", ")"]
-    Enum.member?(punctuations, char)
+    pattern = ~r/[[:punct:]]/ # Expresión regular que coincide con las puntuaciones ~r/[,.:;[\]{}()]/
+    Regex.match?(pattern, char)
   end
 
+  # def is_object_key?(char) do
+  #   object_keys = [
+  #     "\"", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+  #     "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+  #     "u", "v", "w", "x", "y", "z", "A", "B", "C", "D",
+  #     "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
+  #     "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
+  #     "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7",
+  #     "8", "9", "_", "-", " "
+  #   ]
+  #   Enum.member?(object_keys, char)
+  # end
+
   def is_object_key?(char) do
-    object_keys = [
-      "\"", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-      "u", "v", "w", "x", "y", "z", "A", "B", "C", "D",
-      "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
-      "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
-      "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7",
-      "8", "9", "_", "-", " "
-    ]
-    Enum.member?(object_keys, char)
+    pattern = ~r/^[a-zA-Z0-9_\- ]$/  # Expresión regular que coincide con los caracteres permitidos para una clave de objeto
+    Regex.match?(pattern, char)
   end
+
 end
-# JSON_DFA.readerWritter("example.json", "ex.html")
+JSON_DFA.readerWritter("example.json", "ex.html")

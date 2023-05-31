@@ -5,7 +5,6 @@ defmodule JSON_DFA do
       |> File.stream!()
       |> Enum.map(&evaluateLine/1)
       |> Enum.join("")
-<<<<<<< HEAD
 
     write_html_file(out_filename, data)
     write_css_file("token_colors.css")
@@ -65,9 +64,6 @@ defmodule JSON_DFA do
     }
     """
     File.write(file_path, css)
-=======
-    File.write(out_filename, data)
->>>>>>> cf63549ac86c3166a7933629508b36f0eefa3132
   end
 
   def evaluateLine(line) do
@@ -87,6 +83,7 @@ defmodule JSON_DFA do
       recursion_function(rest, [" " | tokens], [], state)
     end
   end
+
   defp recursion_function(["\n" | rest], tokens, _current_token, state) do
     recursion_function(rest, ["\n" | tokens], [], state)
   end
@@ -141,33 +138,20 @@ defmodule JSON_DFA do
   end
 
   def is_punctuation?(char) do
-<<<<<<< HEAD
     pattern = ~r/[[:punct:]]/ # Expresión regular que coincide con las puntuaciones ~r/[,.:;[\]{}()]/
     Regex.match?(pattern, char)
   end
-
-  # def is_object_key?(char) do
-  #   object_keys = [
-  #     "\"", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-  #     "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-  #     "u", "v", "w", "x", "y", "z", "A", "B", "C", "D",
-  #     "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
-  #     "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
-  #     "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7",
-  #     "8", "9", "_", "-", " "
-  #   ]
-  #   Enum.member?(object_keys, char)
-  # end
 
   def is_object_key?(char) do
     pattern = ~r/^[a-zA-Z0-9_\- ]$/  # Expresión regular que coincide con los caracteres permitidos para una clave de objeto
     Regex.match?(pattern, char)
   end
 
-=======
-    punctuation_regex = ~r/[,.;\[\]{}()]/
-    Regex.match?(punctuation_regex, char)
-  end
+  # def is_object_key?(char) do
+  #   object_key_regex = ~r/["a-zA-Z0-9_\- ]/
+  #   Regex.match?(object_key_regex, char)
+  # end
+
   def is_punctuation_str?(char) do #quitar esto
     punctuation_str_regex = ~r/[:]/
     Regex.match?(punctuation_str_regex, char)
@@ -176,15 +160,11 @@ defmodule JSON_DFA do
     str_cierre_regex = ~r/["]/
     Regex.match?(str_cierre_regex, char)
   end
-  def is_object_key?(char) do
-    object_key_regex = ~r/["a-zA-Z0-9_\- ]/
-    Regex.match?(object_key_regex, char)
-  end
+
   def is_string?(char) do
     string_regex = ~r/[a-zA-Z0-9_\-+&#\/]/
     Regex.match?(string_regex, char)
   end
 
->>>>>>> cf63549ac86c3166a7933629508b36f0eefa3132
 end
 JSON_DFA.readerWritter("example.json", "ex.html")

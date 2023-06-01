@@ -46,6 +46,10 @@
 
 <p>La funcion <b>stepper</b> tiene el fin de realizar las transiciones de estado, por lo que se busco hacer un "do" para hacer una comparación y determinar el nuevo estado y un indicador valido para el DFA<p>
 
+<video src="./JSONvideo.mp4" controls>
+  Tu navegador no admite la etiqueta de video.
+</video>
+
 <b>Reflexión</b>
 
 Durante el desarrollo de este proyecto, hemos tenido la oportunidad de aprender y aplicar los métodos computacionales para la creación de un DFA (Autómata Finito Determinado) con el objetivo de resaltar la sintaxis de archivos de código en HTML. Ha sido una experiencia enriquecedora que nos ha permitido profundizar en el conocimiento de los lenguajes de programación y su estructura. Una de las principales lecciones aprendidas es la importancia de entender la lógica detrás de la asignación de la sintaxis y la separación de los diferentes tipos de tokens en un archivo de código. Mediante el análisis de cada carácter y su contexto, pudimos identificar patrones y determinar el tipo de token al que pertenecía. Además, este proyecto nos ha brindado la oportunidad de trabajar en equipo y aprender a organizar y distribuir las tareas de manera eficiente. La colaboración entre los miembros del equipo fue fundamental para el éxito del proyecto, ya que cada uno aportó sus habilidades y conocimientos específicos. A lo largo del proceso, también nos enfrentamos a desafíos técnicos y tuvimos que buscar soluciones creativas. La implementación de los módulos para el procesamiento de archivos JSON y Python nos permitió abordar diferentes formatos de código y adaptar nuestro DFA para cada caso.

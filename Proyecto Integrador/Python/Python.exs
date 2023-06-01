@@ -105,9 +105,6 @@ defmodule Py do
   end
 
   defp recursion_function([head | tail], tokens, current_token, state) do
-    IO.inspect(head)
-    IO.inspect(state)
-    IO.inspect(current_token)
     {new_state, token_found} = stepper(state, head)
     if token_found do
       if Enum.empty?(current_token) do

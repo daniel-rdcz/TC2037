@@ -167,7 +167,6 @@ defmodule Py do
       state == :return -> "<span class=\"reserved-word-3\">#{token}</span>"
       state == :True -> "<span class=\"reserved-word-2\">#{token}</span>"
       state == :False -> "<span class=\"reserved-word-2\">#{token}</span>"
-
     end
   end
 

@@ -69,8 +69,8 @@ defmodule JSON do
   def evaluateLine(line) do
     chars = String.graphemes(line)
     recursion_function(chars, [], [], :start)
-    |> Enum.reverse() # Invertir la lista para obtener el orden correcto
-    |> Enum.join("") # Unir los elementos en una cadena
+    |> Enum.reverse()
+    |> Enum.join("")
   end
 
   defp recursion_function([], tokens, current_token, _state) do
@@ -136,7 +136,7 @@ defmodule JSON do
       state == :start and is_corchete?(char)-> {:corchete, true}
       state == :start and is_llave?(char)-> {:llave, true}
       state == :start and is_punctuation?(char)-> {:punctuation, true}
-      #
+      #estados corchete
       state == :corchete and is_comillas?(char)-> {:string, false}
       state == :corchete and is_number?(char)-> {:number, false}
       state == :corchete and char == "f" -> {:f2, false}
@@ -144,15 +144,14 @@ defmodule JSON do
       state == :corchete and is_corchete?(char)-> {:inv, true}
       state == :corchete and is_llave?(char)-> {:llave, true}
       state == :corchete and is_punctuation?(char)-> {:punctuation, true}
-      #
+      #estados llave
       state == :llave and is_comillas?(char)-> {:comillas_ok, false}
       state == :llave and is_corchete?(char)-> {:corchete, true}
-      #
+      #estados comillas
       state == :comillas and is_object_key?(char)-> {:object_key, false}
       state == :comillas and is_double_dots?(char)-> {:double_dots, true}
       state == :comillas_ok and is_object_key?(char)-> {:object_key_ok, false}
-
-      #
+      #estados object_key
       state == :object_key and is_object_key?(char)-> {:object_key, false}
       state == :object_key and is_corchete?(char)-> {:inv, true}
       state == :object_key and is_llave?(char)-> {:inv, true}
@@ -165,7 +164,7 @@ defmodule JSON do
       state == :object_key_ok and is_object_key?(char)-> {:object_key_ok, false}
       state == :object_key_ok and is_comillas?(char)-> {:object_key_ok, true}
       state == :object_key_ok and is_double_dots?(char)-> {:double_dots_ok, true}
-      #
+      #estados double_dots
       state == :double_dots and is_comillas?(char)-> {:string, false}
       state == :double_dots and is_corchete?(char)-> {:corchete, true}
       state == :double_dots and is_llave?(char)-> {:llave, true}
@@ -173,16 +172,16 @@ defmodule JSON do
       state == :double_dots and char == "f" -> {:f2, false}
       state == :double_dots and char == "t" -> {:t2, false}
       state == :double_dots_ok and is_number?(char)-> {:number_ok, false}
-      #
+      #estados string
       state == :string and is_string?(char)-> {:string, false}
       state == :string and is_comillas?(char)-> {:close_str, false}
       state == :string and is_double_dots?(char)-> {:string, false}
       state == :string and is_comma?(char)-> {:string, false}
       state == :string and is_dot?(char)-> {:string, false}
-      #
+      #estados close_str
       state == :close_str and is_punctuation?(char)-> {:punctuation, true}
       state == :close_str and is_comma?(char)->{:comma, true}
-      #
+      #estados number
       state == :number and is_comillas?(char)-> {:inv, true}
       state == :number and is_corchete?(char)-> {:inv, true}
       state == :number and is_llave?(char)-> {:inv, true}
@@ -197,7 +196,7 @@ defmodule JSON do
       state == :number_ok and is_number?(char)-> {:number_ok, false}
       state == :number_ok and is_comma?(char)-> {:comma_ok, true}
       state == :number_ok and is_punctuation?(char)-> {:punctuation, true}
-      #
+      #estados boolean
       state == :f2 and (char == "a") -> {:f3, false}
       state == :f3 and (char == "l") -> {:f4, false}
       state == :f4 and (char == "s") -> {:f5, false}
@@ -209,13 +208,13 @@ defmodule JSON do
       state == :f6 and is_comma?(char) -> {:comma, true}
       state == :t5 and is_punctuation?(char) -> {:punctuation, true}
       state == :t5 and is_comma?(char) -> {:comma, true}
-      #
+      #estados punctuation
       state == :punctuation and is_punctuation?(char)-> {:punctuation, true}
       state == :punctuation and is_comillas?(char)-> {:string, false}
       state == :punctuation and is_corchete?(char)-> {:corchete, true}
       state == :punctuation and is_llave?(char)-> {:llave, true}
       state == :punctuation and is_comma?(char)-> {:comma, true}
-      #
+      #estados comma
       state == :comma and is_comma?(char)-> {:comma, true}
       state == :comma and is_number?(char)-> {:number, false}
       state == :comma and is_comillas?(char)-> {:string, false}
@@ -224,44 +223,15 @@ defmodule JSON do
     end
   end
 
-  def is_dot?(char) do
-    Regex.match?(~r/[.]/, char)
-  end
-
-  def is_corchete?(char) do
-    Regex.match?(~r/[\[]/, char)
-  end
-
-  def is_llave?(char) do
-    Regex.match?(~r/\{/, char)
-  end
-
-  def is_punctuation?(char) do
-    Regex.match?(~r/[;\]\}()]/, char)
-  end
-
-  def is_comma?(char) do
-    Regex.match?(~r/[,]/, char)
-  end
-
-  def is_double_dots?(char) do
-    Regex.match?(~r/[:]/, char)
-  end
-
-  def is_comillas?(char) do
-    Regex.match?(~r/["]/, char)
-  end
-
-  def is_object_key?(char) do
-    Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ]/u, char)
-  end
-
-  def is_string?(char) do
-    Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ;]/u, char)
-  end
-
-  def is_number?(char) do
-    Regex.match?(~r/[0-9]+/, char)
-  end
+  def is_dot?(char) do Regex.match?(~r/[.]/, char) end
+  def is_corchete?(char) do Regex.match?(~r/[\[]/, char) end
+  def is_llave?(char) do Regex.match?(~r/\{/, char)end
+  def is_punctuation?(char) do Regex.match?(~r/[;\]\}()]/, char) end
+  def is_comma?(char) do Regex.match?(~r/[,]/, char) end
+  def is_double_dots?(char) do Regex.match?(~r/[:]/, char) end
+  def is_comillas?(char) do Regex.match?(~r/["]/, char) end
+  def is_object_key?(char) do Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ]/u, char) end
+  def is_string?(char) do Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ;]/u, char) end
+  def is_number?(char) do Regex.match?(~r/[0-9]+/, char) end
 end
 JSON.readerWritter("base-file.json", "highlighted-sintaxis.html")

@@ -1,0 +1,36 @@
+{
+    "empresa": "Acme Corporation",
+    "empleados": [
+      {
+        "nombre": "John Doe",
+        "edad": 35,
+        "puesto": "Gerente de Proyectos",
+        "salario": 65000
+      },
+      {
+        "nombre": "Jane Smith",
+        "edad": 28,
+        "puesto": "Analista de Datos",
+        "salario": 50000
+      },
+      {
+        "nombre": "Michael Johnson",
+        "edad": 42,
+        "puesto": "Desarrollador Senior",
+        "salario": 80000
+      }
+    ],
+    "oficinas": [
+      {
+        "ciudad": "Nueva York",
+        "dirección": "123 Main St",
+        "empleados": ["John Doe", "Jane Smith"]
+      },
+      {
+        "ciudad": "Los Angeles",
+        "dirección": "456 Elm St",
+        "empleados": ["Michael Johnson"]
+      }
+    ]
+  }
+  

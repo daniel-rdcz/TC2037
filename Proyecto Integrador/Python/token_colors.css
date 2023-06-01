@@ -18,11 +18,6 @@ body {
  .reserved-word-3{
   color: #ab77c9
  }
-
- .variable{
-  color: #5dbcf8
- }
-
  .punctuation {
   color: LightGray;
 }
@@ -46,13 +41,13 @@ body {
 }
 
 .reserved-word-2{
-  color: #1f2dca
+  color: #3142ff
 }
 .comentario{
   color: #31b752
 }
 .variable{
-  color: #7ae2ff
+  color: #ffffff
 }
 .operador{
   color: #e84e4e
@@ -63,4 +58,6 @@ body {
 .string{
   color: #e8964e
 }
-
+.function-input{
+  color: #6af9f9
+}

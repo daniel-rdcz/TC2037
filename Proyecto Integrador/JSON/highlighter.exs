@@ -89,6 +89,7 @@ defmodule JSON do
   end
   defp recursion_function([head | tail], tokens, current_token, state) do
     {new_state, token_found} = stepper(state, head)
+    IO.puts "head: #{head} state: #{state} new_state: #{new_state} "
     if token_found do
       if Enum.empty?(current_token) do
         tokens = [classer(head, state) | tokens]

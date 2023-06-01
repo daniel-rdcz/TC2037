@@ -88,6 +88,7 @@ defmodule JSON do
     recursion_function(rest, ["\n" | tokens], [], state)
   end
   defp recursion_function([head | tail], tokens, current_token, state) do
+    IO.puts "head: #{head} state: #{state}"
     {new_state, token_found} = stepper(state, head)
     if token_found do
       if Enum.empty?(current_token) do
@@ -118,6 +119,11 @@ defmodule JSON do
       state == :t5 -> "<span class=\"reserved-word\">#{token}</span>"
       state == :corchete -> "<span class=\"punctuation\">#{token}</span>"
       state == :llave -> "<span class=\"punctuation\">#{token}</span>"
+      state == :comma -> "<span class=\"punctuation\">#{token}</span>"
+      state == :object_key_ok -> "<span class=\"object-key\">#{token}</span>"
+      state == :double_dots_ok -> "<span class=\"punctuation\">#{token}</span>"
+      state == :number_ok -> "<span class=\"number\">#{token}</span>"
+      state == :comma_ok -> "<span class=\"punctuation\">#{token}</span>"
     end
   end
 
@@ -126,9 +132,10 @@ defmodule JSON do
       #estados start
       state == :start and char == "f" -> {:inv, false}
       state == :start and char == "t" -> {:inv, false}
-      state == :start and is_comillas?(char)-> {:inv, false}
+      state == :start and is_comillas?(char)-> {:object_key, false}
       state == :start and is_corchete?(char)-> {:corchete, true}
       state == :start and is_llave?(char)-> {:llave, true}
+      state == :start and is_punctuation?(char)-> {:punctuation, true}
       #
       state == :corchete and is_comillas?(char)-> {:string, false}
       state == :corchete and is_number?(char)-> {:number, false}
@@ -138,28 +145,26 @@ defmodule JSON do
       state == :corchete and is_llave?(char)-> {:llave, true}
       state == :corchete and is_punctuation?(char)-> {:punctuation, true}
       #
-      state == :llave and is_comillas?(char)-> {:comillas, false}
+      state == :llave and is_comillas?(char)-> {:comillas_ok, false}
       state == :llave and is_corchete?(char)-> {:corchete, true}
-      state == :llave and is_llave?(char)-> {:inv, true}
-      state == :llave and is_number?(char)-> {:inv, false}
-      state == :llave and char == "f" -> {:inv_f, false}
-      state == :llave and char == "t" -> {:inv_f, false}
-      state == :llave and is_double_dots?(char)-> {:inv, true}
       #
       state == :comillas and is_object_key?(char)-> {:object_key, false}
       state == :comillas and is_double_dots?(char)-> {:double_dots, true}
+      state == :comillas_ok and is_object_key?(char)-> {:object_key_ok, false}
 
       #
+      state == :object_key and is_object_key?(char)-> {:object_key, false}
       state == :object_key and is_corchete?(char)-> {:inv, true}
       state == :object_key and is_llave?(char)-> {:inv, true}
       state == :object_key and is_number?(char)-> {:inv, false}
       state == :object_key and char == "f" -> {:inv_f, false}
       state == :object_key and char == "t" -> {:inv_t, false}
-      state == :object_key and is_object_key?(char)-> {:object_key, false}
-      state == :object_key and is_comillas?(char)-> {:object_key, false}
+      state == :object_key and is_comillas?(char)-> {:object_key, true}
       state == :object_key and is_double_dots?(char)-> {:double_dots, true}
       state == :object_key and is_punctuation?(char)-> {:punctuation, true}
-
+      state == :object_key_ok and is_object_key?(char)-> {:object_key_ok, false}
+      state == :object_key_ok and is_comillas?(char)-> {:object_key_ok, true}
+      state == :object_key_ok and is_double_dots?(char)-> {:double_dots_ok, true}
       #
       state == :double_dots and is_comillas?(char)-> {:string, false}
       state == :double_dots and is_corchete?(char)-> {:corchete, true}
@@ -167,12 +172,17 @@ defmodule JSON do
       state == :double_dots and is_number?(char)-> {:number, false}
       state == :double_dots and char == "f" -> {:f2, false}
       state == :double_dots and char == "t" -> {:t2, false}
-
+      state == :double_dots_ok and is_number?(char)-> {:number_ok, false}
       #
       state == :string and is_string?(char)-> {:string, false}
       state == :string and is_comillas?(char)-> {:close_str, false}
+      state == :string and is_double_dots?(char)-> {:string, false}
+      state == :string and is_comma?(char)-> {:string, false}
+      state == :string and is_dot?(char)-> {:string, false}
       #
       state == :close_str and is_punctuation?(char)-> {:punctuation, true}
+      state == :close_str and is_comma?(char)->{:comma, true}
+      #
       state == :number and is_comillas?(char)-> {:inv, true}
       state == :number and is_corchete?(char)-> {:inv, true}
       state == :number and is_llave?(char)-> {:inv, true}
@@ -181,6 +191,12 @@ defmodule JSON do
       state == :number and char == "t" -> {:inv_t, false}
       state == :number and is_double_dots?(char)-> {:inv, true}
       state == :number and is_punctuation?(char)-> {:punctuation, true}
+      state == :number and is_comma?(char)-> {:comma, true}
+      state == :number and is_dot?(char)-> {:number, false}
+      state == :number_ok and is_dot?(char)-> {:number_ok, false}
+      state == :number_ok and is_number?(char)-> {:number_ok, false}
+      state == :number_ok and is_comma?(char)-> {:comma_ok, true}
+      state == :number_ok and is_punctuation?(char)-> {:punctuation, true}
       #
       state == :f2 and (char == "a") -> {:f3, false}
       state == :f3 and (char == "l") -> {:f4, false}
@@ -190,55 +206,62 @@ defmodule JSON do
       state == :t3 and (char == "u") -> {:t4, false}
       state == :t4 and (char == "e") -> {:t5, false}
       state == :f6 and is_punctuation?(char) -> {:punctuation, true}
+      state == :f6 and is_comma?(char) -> {:comma, true}
       state == :t5 and is_punctuation?(char) -> {:punctuation, true}
+      state == :t5 and is_comma?(char) -> {:comma, true}
       #
       state == :punctuation and is_punctuation?(char)-> {:punctuation, true}
       state == :punctuation and is_comillas?(char)-> {:string, false}
       state == :punctuation and is_corchete?(char)-> {:corchete, true}
       state == :punctuation and is_llave?(char)-> {:llave, true}
-
+      state == :punctuation and is_comma?(char)-> {:comma, true}
+      #
+      state == :comma and is_comma?(char)-> {:comma, true}
+      state == :comma and is_number?(char)-> {:number, false}
+      state == :comma and is_comillas?(char)-> {:string, false}
+      state == :comma_ok and is_comma?(char)-> {:comma_ok, true}
+      state == :comma_ok and is_comillas?(char)-> {:object_key_ok, false}
     end
   end
 
   def is_dot?(char) do
-    dot_regex = ~r/[.]/
-    Regex.match?(dot_regex, char)
+    Regex.match?(~r/[.]/, char)
   end
+
   def is_corchete?(char) do
-    corchete_regex = ~r/[\[]/
-    Regex.match?(corchete_regex, char)
+    Regex.match?(~r/[\[]/, char)
   end
+
   def is_llave?(char) do
-    lista_regex = ~r/[{]/
-    Regex.match?(lista_regex, char)
+    Regex.match?(~r/\{/, char)
   end
+
   def is_punctuation?(char) do
-    punctuation_regex = ~r/[;\])}]/
-    Regex.match?(punctuation_regex, char)
+    Regex.match?(~r/[;\]\}()]/, char)
   end
+
   def is_comma?(char) do
-    comma_regex = ~r/[,]/
-    Regex.match?(comma_regex, char)
+    Regex.match?(~r/[,]/, char)
   end
-  def is_double_dots?(char) do #quitar esto
-    double_dots_regex = ~r/[:]/
-    Regex.match?(double_dots_regex, char)
+
+  def is_double_dots?(char) do
+    Regex.match?(~r/[:]/, char)
   end
+
   def is_comillas?(char) do
-    str_cierre_regex = ~r/["]/
-    Regex.match?(str_cierre_regex, char)
+    Regex.match?(~r/["]/, char)
   end
+
   def is_object_key?(char) do
-    object_key_regex = ~r/[a-zA-Z0-9_\- ]/
-    Regex.match?(object_key_regex, char)
+    Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ]/u, char)
   end
+
   def is_string?(char) do
-    string_regex = ~r/[a-zA-Z0-9_\-+&#\/]/
-    Regex.match?(string_regex, char)
+    Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ;]/u, char)
   end
+
   def is_number?(char) do
-    int_regex = ~r/[0-9]+/
-    Regex.match?(int_regex, char)
+    Regex.match?(~r/[0-9]+/, char)
   end
 end
 JSON.readerWritter("base-file.json", "highlighted-sintaxis.html")

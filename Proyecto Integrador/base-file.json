@@ -1,1 +1,51 @@
-[{"h"}]
+{
+    "persona": {
+      "nombre": "Alice Smith",
+      "edad": 35,
+      "ciudad": "Los Angeles",
+      "hobbies": ["correr", "leer", "pintar"],
+      "trabajo": {
+        "empresa": "XYZ Corp.",
+        "posición": "Directora de Marketing"
+      }
+    },
+    "amigos": [
+      {
+        "nombre": "Bob Johnson",
+        "edad": 28,
+        "ciudad": "San Francisco",
+        "hobbies": ["bailar", "jugar al fútbol", "cocinar"],
+        "trabajo": {
+          "empresa": "123 Company",
+          "posición": "Ingeniero de Software"
+        }
+      },
+      {
+        "nombre": "Cindy Davis",
+        "edad": 32,
+        "ciudad": "Chicago",
+        "hobbies": ["tocar la guitarra", "viajar", "ver películas"],
+        "trabajo": {
+          "empresa": "ABC Corporation",
+          "posición": "Diseñadora Gráfica"
+        }
+      }
+    ],
+    "libros": [
+      {
+        "título": "El gran Gatsby",
+        "autor": "F. Scott Fitzgerald",
+        "año": 1925
+      },
+      {
+        "título": "1984",
+        "autor": "George Orwell",
+        "año": 1949
+      },
+      {
+        "título": "Orgullo y prejuicio",
+        "autor": "Jane Austen",
+        "año": 1813
+      }
+    ]
+  }  

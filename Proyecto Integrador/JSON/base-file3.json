@@ -1,0 +1,23 @@
+{
+  "nombre": "John Doe",
+  "edad": 30,
+  "ciudad": "Nueva York",
+  "intereses": ["programación", "viajes", "lectura"],
+  "educacion": {
+    "titulo": "Licenciatura en Informática",
+    "institucion": "Universidad XYZ",
+    "año": 2015
+  },
+  "experiencia": [
+    {
+      "puesto": "Desarrollador de software",
+      "empresa": "ABC Inc.",
+      "años": 3
+    },
+    {
+      "puesto": "Analista de datos",
+      "empresa": "XYZ Corp.",
+      "años": 2
+    }
+  ]
+}

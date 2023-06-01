@@ -1,5 +1,5 @@
 defmodule JSON do
-  def readerWritter(in_filename, out_filename) do
+  def writter(in_filename, out_filename) do
     data =
       in_filename
       |> File.stream!()
@@ -88,7 +88,6 @@ defmodule JSON do
     recursion_function(rest, ["\n" | tokens], [], state)
   end
   defp recursion_function([head | tail], tokens, current_token, state) do
-    IO.puts "head: #{head} state: #{state}"
     {new_state, token_found} = stepper(state, head)
     if token_found do
       if Enum.empty?(current_token) do
@@ -234,4 +233,6 @@ defmodule JSON do
   def is_string?(char) do Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ;]/u, char) end
   def is_number?(char) do Regex.match?(~r/[0-9]+/, char) end
 end
-JSON.readerWritter("base-file.json", "highlighted-sintaxis.html")
+JSON.writter("base-file1.json", "example1.html")
+JSON.writter("base-file2.json", "example2.html")
+JSON.writter("base-file3.json", "example3.html")

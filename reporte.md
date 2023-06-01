@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Resaltador de Sintaxis</h1>
+<h1 style="text-align: center">Resaltador de Sintáxis</h1>
 <p> Materia
 
 <ul>

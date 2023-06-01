@@ -320,14 +320,10 @@ defmodule Py do
       state == :start and is_recibers?(char) -> {:recibers, false}
       #comentario
       state == :comentario and char == "\n" -> {:salto, true}
-      state == :comentario and char == " " -> {:comentario, false}
-      state == :comentario and char == "#" -> {:comentario, false}
-      state == :comentario and is_variable?(char) -> {:comentario, false}
-      state == :comentario and is_operador?(char) -> {:comentario, false}
-      state == :comentario and is_number?(char) -> {:comentario, false}
-      state == :comentario and is_recibers?(char) -> {:comentario, false}
-      state == :comentario and is_string?(char) -> {:comentario, false}
-      state == :comentario and is_number?(char) -> {:comentario, false}
+      state == :comentario and
+        (char == " " or char == "#" or is_variable?(char)
+        or is_operador?(char) or is_number?(char)
+        or is_recibers?(char) or is_string?(char)) -> {:comentario, false}
       #espacio general
       state == :espacio and char == " " -> {:espacio, false}
       state == :espacio and char == "w" -> {:w, false}
@@ -346,8 +342,7 @@ defmodule Py do
       state == :espacio and is_number?(char) -> {:number, false}
       state == :espacio and is_recibers?(char) -> {:recibers, true}
       state == :espacio and char == "," -> {:coma, true}
-      state == :espacio and char == "\'" -> {:comillas, true}
-      state == :espacio and char == "\"" -> {:comillas, true}
+      state == :espacio and (char == "\'" or char == "\"") -> {:comillas, true}
       #espacio resp
       state == :espacio_resp and char == " " -> {:espacio_resp, true}
       state == :espacio_resp and char == "F" -> {:F, false}
@@ -360,8 +355,7 @@ defmodule Py do
       state == :espacio_resp and is_number?(char) -> {:number, false}
       state == :espacio_resp and is_recibers?(char) -> {:recibers, false}
       state == :espacio_resp and char == "," -> {:coma, true}
-      state == :espacio and char == "\'" -> {:comillas, true}
-      state == :espacio and char == "\"" -> {:comillas, true}
+      state == :espacio and (char == "\'" or char == "\"") -> {:comillas, true}
       #espacio_lib
       state == :espacio_lib and char == " " -> {:espacio_lib, false}
       state == :espacio_lib and char == "i" -> {:i, false}
@@ -395,8 +389,7 @@ defmodule Py do
       state == :recibers and char == "\n" -> {:salto, true}
       state == :recibers and char == "#" -> {:comentario, true}
       state == :recibers and is_number?(char) -> {:number, true}
-      state == :recibers and char == "\"" -> {:comillas, true}
-      state == :recibers and char == "\'" -> {:comillas, true}
+      state == :recibers and (char == "\'" or char == "\"") -> {:comillas, true}
       state == :recibers and is_variable?(char) -> {:variable, true}
       state == :recibers and ":" -> {:double_dots, true}
       #recibers class
@@ -461,9 +454,7 @@ defmodule Py do
       state == :variable and is_number?(char) -> {:number, true}
       state == :variable and char == ":" -> {:double_dots, true}
       state == :variable and char == "," -> {:coma, true}
-      state == :variable and char == "\'" -> {:comillas, true}
-      state == :variable and char == "\"" -> {:comillas, true}
-      state == :variable and char == "\'" -> {:comillas, true}
+      state == :variable and (char == "\'" or char == "\"") -> {:comillas, true}
       #variable resp
       state == :variable_resp and is_variable?(char) -> {:variable, false}
       state == :variable_resp and char == " " -> {:espacio, true}
@@ -478,8 +469,7 @@ defmodule Py do
       state == :operador and is_variable?(char) -> {:variable_resp, false}
       state == :operador and is_number?(char) -> {:number, false}
       state == :operador and char == "\n" -> {:salto, true}
-      state == :operador and char == "'" -> {:comillas, true}
-      state == :operador and char == "\"" -> {:comillas, true}
+      state == :operador and (char == "\'" or char == "\"") -> {:comillas, true}
       #number
       state == :number and is_number?(char) -> {:number, false}
       state == :number and char == " " -> {:espacio, true}
@@ -497,14 +487,12 @@ defmodule Py do
       state == :comillas and char == ":" -> {:double_dots, true}
       state == :comillas and char == "." -> {:dot, true}
       state == :comillas and is_string?(char) -> {:string, true}
-      state == :comillas and char == "\"" -> {:comillas, false}
-      state == :comillas and char == "\'" -> {:comillas, false}
+      state == :comillas and (char == "\'" or char == "\"") -> {:comillas, false}
       state == :comillas and is_recibers?(char) -> {:recibers, true}
       state == :comillas and char == "\n" -> {:salto, true}
       #string
       state == :string and is_string?(char) -> {:string, false}
-      state == :string and char == "\"" -> {:comillas, true}
-      state == :string and char == "\'" -> {:comillas, true}
+      state == :string and (char == "\'" or char == "\"") -> {:comillas, true}
       state == :string and char == "\n" -> {:salto, true}
       state == :string and char == " " -> {:espacio, true}
       state == :string and is_recibers?(char) -> {:recibers, true}
@@ -529,8 +517,9 @@ defmodule Py do
     Regex.match?(~r/[a-zA-Z_&áéíóúÁÉÍÓÚ$@&~ñÑ-]/u, char)
   end
   def is_string?(char) do
-    Regex.match?(~r/[a-zA-Z_+&áéíóúÁÉÍÓÚ$%@&*~ñÑ¡!:,.{}\/=^0-9 -]/u, char)
-  end
+  Regex.match?(~r/[a-zA-Z_+&áéíóúÁÉÍÓÚ$%@&*~ñÑ¡!:,.{}\/=^0-9 -]/u, char)
+end
+
   def is_recibers?(char) do
     Regex.match?(~r/[(){}[\]]/u, char)
   end

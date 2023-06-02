@@ -352,7 +352,7 @@ defmodule Py do
       state == :variable and char == "\n" -> {:salto, true}
       state == :variable and char == "#" -> {:comentario, true}
       state == :variable and char == "." -> {:dot, true}
-      state == :variable and is_recibers?(char) -> {:recibers, true}
+      state == :variable and is_recibers?(char) -> {:recibers, false}
       state == :variable and is_operador?(char) -> {:operador, true}
       state == :variable and is_number?(char) -> {:number, false}
       state == :variable and char == ":" -> {:double_dots, true}
@@ -376,7 +376,7 @@ defmodule Py do
       state == :number and char == "\n" -> {:salto, true}
       #comillas
       state == :comillas and is_string?(char) -> {:string, false}
-      state == :comillas and char == "\"" -> {:comillas, true}
+      state == :comillas and char == "\"" -> {:comillas, false}
       state == :comillas and is_recibers?(char) -> {:recibers, true}
       #string
       state == :string and is_string?(char) -> {:string, false}
@@ -399,7 +399,7 @@ defmodule Py do
     Regex.match?(~r/[a-zA-Z_+&\/áéíóúÁÉÍÓÚ$%@&*~ñÑ]/u, char)
   end
   def is_string?(char) do
-    Regex.match?(~r/[a-zA-Z_+&\/áéíóúÁÉÍÓÚ$%@&*~ñÑ¡!\d .\#{}\ ]\:/u, char)
+    Regex.match?(~r/[a-zA-Z_+&\/áéíóúÁÉÍÓÚ$%@&*~ñÑ¡!\d :,.{}]/u, char)
   end
   def is_recibers?(char) do
     Regex.match?(~r/[(){}[\]]/u, char)

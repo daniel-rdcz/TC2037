@@ -12,21 +12,55 @@ body {
   background-color: Aquamarine;
   text-align: center;
 }
- .number {
-  color: Lime;
-}
- .string {
-  color: Yellow;
-  font-style: italic;
-}
- .object-key {
-  color: LightSkyBlue;
-  font-weight: bold;
-}
- .reserved-word {
-  font-weight: bold;
-  color: SandyBrown;
-}
-.punctuation {
+ .reserved-word-1{
+  color: #ab77c9
+ }
+ .reserved-word-3{
+  color: #ab77c9
+ }
+
+ .variable{
+  color: #5dbcf8
+ }
+
+ .punctuation {
   color: LightGray;
 }
+ .variable-lib {
+  color: LightGray;
+}
+
+.class-name{
+  color: #38d953
+}
+.class-input{
+  color: #38d953
+}
+
+.recibers{
+  color: #e8e35f
+}
+
+.function-name{
+  color: #e8e35f
+}
+
+.reserved-word-2{
+  color: #1f2dca
+}
+.comentario{
+  color: #31b752
+}
+.variable{
+  color: #7ae2ff
+}
+.operador{
+  color: #e84e4e
+}
+.number{
+  color: #54cc50
+}
+.string{
+  color: #e8964e
+}
+

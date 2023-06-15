@@ -1,0 +1,63 @@
+body {
+  background-color: Black;
+  color: Gray;
+}
+ pre {
+  font-family: Monospace;
+  font-size: 20px;
+}
+ h1 {
+  color: Black;
+  border: 4px solid red;
+  background-color: Aquamarine;
+  text-align: center;
+}
+ .reserved-word-1{
+  color: #ab77c9
+ }
+ .reserved-word-3{
+  color: #ab77c9
+ }
+ .punctuation {
+  color: LightGray;
+}
+ .variable-lib {
+  color: LightGray;
+}
+
+.class-name{
+  color: #38d953
+}
+.class-input{
+  color: #38d953
+}
+
+.recibers{
+  color: #e8e35f
+}
+
+.function-name{
+  color: #e8e35f
+}
+
+.reserved-word-2{
+  color: #3142ff
+}
+.comentario{
+  color: #31b752
+}
+.variable{
+  color: #ffffff
+}
+.operador{
+  color: #e84e4e
+}
+.number{
+  color: #54cc50
+}
+.string{
+  color: #e8964e
+}
+.function-input{
+  color: #6af9f9
+}

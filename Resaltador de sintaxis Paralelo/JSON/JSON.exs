@@ -232,16 +232,31 @@ defmodule JSON do
   def is_object_key?(char) do Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ]/u, char) end
   def is_string?(char) do Regex.match?(~r/[a-zA-Z0-9_+&#\/áéíóúÁÉÍÓÚ$%@&*~ñÑ;]/u, char) end
   def is_number?(char) do Regex.match?(~r/[0-9]+/, char) end
+
 end
 
+start_time_static = :os.system_time(:millisecond)
 
-start_time = :os.system_time(:millisecond)
+JSON.writter("../JSON/Files/base-file1.json", "static_highlight1.html")
+JSON.writter("../JSON/Files/base-file2.json", "static_highlight2.html")
+JSON.writter("../JSON/Files/base-file3.json", "static_highlight3.html")
 
-JSON.writter("base-file1.json", "example1.html")
-JSON.writter("base-file2.json", "example2.html")
-JSON.writter("base-file3.json", "example3.html")
+end_time_static = :os.system_time(:millisecond)
+execution_time_static = end_time_static - start_time_static
 
-end_time = :os.system_time(:millisecond)
-execution_time = end_time - start_time
+IO.puts("Tiempo de ejecucion estatica: #{execution_time_static} milisegundos")
 
-IO.puts("Tiempo de ejecución: #{execution_time} milisegundos")
+
+start_time_parallel = :os.system_time(:millisecond)
+
+{:ok, files} = File.ls("../JSON/Files")
+files
+  |> Enum.map(&Task.async(fn -> JSON.writter("../JSON/Files/#{&1}", "#{&1}.html") end))
+  |> Enum.map(&Task.await(&1))
+
+end_time_parallel = :os.system_time(:millisecond)
+execution_time_parallel = end_time_parallel - start_time_parallel
+
+IO.puts("Tiempo de ejecucion paralelo: #{execution_time_parallel} milisegundos")
+
+IO.puts("Speedup: #{execution_time_static / execution_time_parallel}")

@@ -531,11 +531,12 @@ end
   end
 end
 
+{:ok, files} = File.ls("../Python/Files")
+
 start_time_static = :os.system_time(:millisecond)
 
-Py.writter("../Python/Files/base-file.py", "highlighted-sintaxis1.html")
-Py.writter("../Python/Files/base-file2.py", "highlighted-sintaxis2.html")
-Py.writter("../Python/Files/base-file3.py", "highlighted-sintaxis3.html")
+files
+  |> Enum.map(fn file -> Py.writter("../Python/Files/#{file}", "#{file}.html") end)
 
 end_time_static = :os.system_time(:millisecond)
 execution_time_static = end_time_static - start_time_static
@@ -545,7 +546,6 @@ IO.puts("Tiempo de ejecucion estatica: #{execution_time_static} milisegundos")
 
 start_time_parallel = :os.system_time(:millisecond)
 
-{:ok, files} = File.ls("../Python/Files")
 files
   |> Enum.map(&Task.async(fn -> Py.writter("../Python/Files/#{&1}", "#{&1}.html") end))
   |> Enum.map(&Task.await(&1))

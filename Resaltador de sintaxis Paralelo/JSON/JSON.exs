@@ -235,11 +235,11 @@ defmodule JSON do
 
 end
 
+{:ok, files} = File.ls("../JSON/Files")
 start_time_static = :os.system_time(:millisecond)
 
-JSON.writter("../JSON/Files/base-file1.json", "static_highlight1.html")
-JSON.writter("../JSON/Files/base-file2.json", "static_highlight2.html")
-JSON.writter("../JSON/Files/base-file3.json", "static_highlight3.html")
+files
+  |> Enum.map(fn file -> JSON.writter("../JSON/Files/#{file}", "#{file}.html") end)
 
 end_time_static = :os.system_time(:millisecond)
 execution_time_static = end_time_static - start_time_static
@@ -249,7 +249,6 @@ IO.puts("Tiempo de ejecucion estatica: #{execution_time_static} milisegundos")
 
 start_time_parallel = :os.system_time(:millisecond)
 
-{:ok, files} = File.ls("../JSON/Files")
 files
   |> Enum.map(&Task.async(fn -> JSON.writter("../JSON/Files/#{&1}", "#{&1}.html") end))
   |> Enum.map(&Task.await(&1))
